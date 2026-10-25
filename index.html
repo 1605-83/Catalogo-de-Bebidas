@@ -63,13 +63,13 @@ header.cab{display:flex;justify-content:space-between;align-items:flex-start;gap
 .pdf:hover{filter:brightness(.92)}.pdf:focus-visible{outline:3px solid var(--claro);outline-offset:2px}
 .pdf[disabled]{opacity:.6;cursor:wait}
 /* bordes de las tarjetas y titulo cambiando de color todo el tiempo */
-@keyframes colores{0%{--x:#FF4D4D}16%{--x:#FFB020}33%{--x:#FFE14D}50%{--x:#4DDB6B}66%{--x:#3BB3FF}83%{--x:#B26BFF}100%{--x:#FF4D4D}}
 @keyframes bordes{0%{border-color:#FF4D4D}16%{border-color:#FFB020}33%{border-color:#FFE14D}50%{border-color:#4DDB6B}66%{border-color:#3BB3FF}83%{border-color:#B26BFF}100%{border-color:#FF4D4D}}
 @keyframes letras{0%{color:#FF4D4D}16%{color:#FFB020}33%{color:#FFE14D}50%{color:#4DDB6B}66%{color:#3BB3FF}83%{color:#B26BFF}100%{color:#FF4D4D}}
 .prod{border-width:2.5px;animation:bordes 6s linear infinite}
-h1{animation:letras 6s linear infinite}
-@media (prefers-reduced-motion:reduce){.prod,h1{animation-duration:30s}}@media print{
-  .prod,h1{animation:none!important}
+.tam{animation:bordes 6s linear infinite}
+h1,h3{animation:letras 6s linear infinite}
+@media (prefers-reduced-motion:reduce){.prod,.tam,h1,h3{animation-duration:30s}}@media print{
+  .prod,.tam,h1,h3{animation:none!important}
   @page{size:A4;margin:10mm}
   html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{padding:0 4mm;font-size:11px}
