@@ -68,7 +68,11 @@ header.cab{display:flex;justify-content:space-between;align-items:flex-start;gap
 .prod{border-width:2.5px;animation:bordes 6s linear infinite}
 .tam{animation:bordes 6s linear infinite}
 h1,h3{animation:letras 6s linear infinite}
-@media (prefers-reduced-motion:reduce){.prod,.tam,h1,h3{animation-duration:30s}}@media print{
+@media (prefers-reduced-motion:reduce){.prod,.tam,h1,h3{animation-duration:30s}}/* WhatsApp al lado del boton del PDF */
+.acciones{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.wasap{display:flex;align-items:center;gap:6px;color:#fff;text-decoration:none;font-weight:700;font-size:.9rem;white-space:nowrap}
+.wasap img{width:28px;height:28px;border-radius:50%}
+.wasap:hover span{text-decoration:underline}.wasap:focus-visible{outline:3px solid var(--claro);outline-offset:2px;border-radius:6px}@media print{
   .prod,.tam,h1,h3{animation:none!important}
   @page{size:A4;margin:10mm}
   html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -87,7 +91,7 @@ h1,h3{animation:letras 6s linear infinite}
   <header class="cab"><div>
     <h1>Catálogo de Bebidas</h1>
     <p class="sub">Precios sujetos a posibles cambios</p>
-  </div><button type="button" class="pdf" id="btnPdf" onclick="descargarPDF()" title="Guardar el catálogo como PDF">⬇ Descargar PDF</button></header>
+  </div><div class="acciones"><a class="wasap" href="https://wa.me/5491144386153" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp al 11 4438-6153"><img src="img/whatsapp.png" alt="" width="28" height="28"><span>11 4438-6153</span></a><button type="button" class="pdf" id="btnPdf" onclick="descargarPDF()" title="Guardar el catálogo como PDF">⬇ Descargar PDF</button></div></header>
   <div class="arriba">
     <input class="buscar" id="q" type="search" placeholder="Buscar (ej. Quilmes, fernet, 710)" aria-label="Buscar producto" autocomplete="off">
     <p class="cuenta" id="cuenta" hidden></p>
