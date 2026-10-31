@@ -278,6 +278,8 @@ const BEBIDAS = [
     ]],
   ]],
 ];
+// productos que tambien se venden sueltos por unidad; el resto solo por bulto (pedido de Bruno, 31/10/2026)
+const SUELTOS = /skyy|santa julia|new style|fernet (branca|1882 750)|corona botella 710|gin merle|smirnoff botella|gancia|licor de mel|whisky|caf. al co/i;
 const FOTOS_V = '2';   // cambiar cuando se reemplazan las fotos
 const fmt = new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',minimumFractionDigits:0,maximumFractionDigits:0});
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -292,8 +294,8 @@ const tarjeta = (p, cat, tam) => {
   const precios = ops.map(([u, pr]) => (u
     ? `<div class="op"><div class="precio bulto"><span>Bulto x${u}</span><b>${fmt.format(pr)}</b></div><div class="precio"><span>Unidad</span><b>${fmt.format(pr / u)}</b></div></div>`
     : `<div class="op"><div class="precio bulto"><span>Unidad</span><b>${fmt.format(pr)}</b></div></div>`)
-    // se puede pedir por bulto o suelto por unidad (al precio por unidad que se muestra)
-    + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? Math.round(pr / u) : pr}"></div></div>`).join('');
+    // por bulto siempre; suelto por unidad solo los de SUELTOS (al precio por unidad que se muestra)
+    + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}${!u || SUELTOS.test(nombre) ? `<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? Math.round(pr / u) : pr}"></div>` : ''}</div>`).join('');
   return `<article class="prod" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam))}">
     <div class="foto">${img}</div>
     <div class="datos">
