@@ -72,7 +72,41 @@ h1,h3{animation:letras 6s linear infinite}
 .acciones{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
 .wasap{display:flex;align-items:center;gap:6px;color:#fff;text-decoration:none;font-weight:700;font-size:.9rem;white-space:nowrap}
 .wasap img{width:28px;height:28px;border-radius:50%}
-.wasap:hover span{text-decoration:underline}.wasap:focus-visible{outline:3px solid var(--claro);outline-offset:2px;border-radius:6px}@media print{
+.wasap:hover span{text-decoration:underline}.wasap:focus-visible{outline:3px solid var(--claro);outline-offset:2px;border-radius:6px}
+/* carrito: el cliente arma el pedido y lo manda por WhatsApp */
+.agr{margin-top:6px}
+.agr .add{font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;color:#fff;background:#25D366;border:0;border-radius:8px;padding:7px 12px}
+.agr .add:hover{filter:brightness(.93)}
+.cant{display:inline-flex;align-items:center;border:2px solid #25D366;border-radius:8px;overflow:hidden}
+.cant button{font:inherit;font-size:1.05rem;font-weight:800;width:34px;height:32px;border:0;background:#E9FBF0;color:#128C4A;cursor:pointer}
+.cant input{width:46px;height:32px;border:0;text-align:center;font:inherit;font-weight:700;font-size:16px;color:var(--fg);-moz-appearance:textfield}
+.cant input::-webkit-outer-spin-button,.cant input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.agr .add:focus-visible,.cant button:focus-visible,.cant input:focus-visible{outline:3px solid var(--claro);outline-offset:1px}
+.barra-carro{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;align-items:center;gap:12px;font:inherit;font-weight:800;font-size:1rem;color:#fff;background:#25D366;border:0;border-radius:999px;padding:12px 22px;box-shadow:0 6px 20px rgba(0,0,0,.45);cursor:pointer;max-width:calc(100% - 32px);white-space:nowrap}
+.barra-carro[hidden],.carro[hidden],.fondo[hidden]{display:none}
+body.con-carro{padding-bottom:90px}
+.fondo{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:6}
+.carro{position:fixed;right:0;top:0;bottom:0;width:min(440px,100%);z-index:7;background:#fff;color:var(--fg);display:flex;flex-direction:column;box-shadow:-6px 0 24px rgba(0,0,0,.4)}
+.carro header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+.carro h2{color:var(--fg);margin:0;font-size:1.15rem}
+.cerrar{font:inherit;font-size:1.4rem;line-height:1;border:0;background:none;cursor:pointer;color:var(--muted);padding:4px 8px}
+.items{flex:1;overflow:auto;padding:6px 18px}
+.it{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.it .n{font-weight:700;font-size:.92rem}.it .u{font-size:.78rem;color:var(--muted)}
+.it .s{font-family:var(--f-num);font-weight:600;text-align:right;align-self:center}
+.it .quitar{font:inherit;font-size:.78rem;color:#C0392B;background:none;border:0;cursor:pointer;padding:0;justify-self:start}
+.pie{padding:14px 18px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:grid;gap:9px}
+.total{display:flex;justify-content:space-between;font-weight:800;font-size:1.1rem}.total b{font-family:var(--f-num)}
+.pie label{font-size:.8rem;color:var(--muted);display:grid;gap:3px}
+.pie input,.pie textarea{font:inherit;font-size:16px;color:var(--fg);border:1px solid #c9d0da;border-radius:8px;padding:8px 10px}
+.pie textarea{min-height:52px;resize:vertical}
+.enviar{font:inherit;font-weight:800;font-size:1rem;color:#fff;background:#25D366;border:0;border-radius:10px;padding:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.enviar img{width:22px;height:22px;border-radius:50%}
+.vaciar{font:inherit;font-size:.82rem;color:var(--muted);background:none;border:0;cursor:pointer;text-decoration:underline}
+.aviso{font-size:.75rem;color:var(--muted);margin:0}
+.err{color:#C0392B;font-size:.82rem;font-weight:700;margin:0}
+@media print{.agr,.barra-carro,.carro,.fondo{display:none!important}}
+@media print{
   .prod,.tam,h1,h3{animation:none!important}
   @page{size:A4;margin:10mm}
   html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -99,6 +133,23 @@ h1,h3{animation:letras 6s linear infinite}
   </div>
   <div id="cat"></div>
 </div>
+<button type="button" class="barra-carro" id="barra" hidden aria-haspopup="dialog">🛒 <span id="barraTxt"></span></button>
+<div class="fondo" id="fondo" hidden></div>
+<aside class="carro" id="carro" role="dialog" aria-modal="true" aria-labelledby="tCarro" hidden>
+  <header><h2 id="tCarro">Tu pedido</h2><button type="button" class="cerrar" id="cerrar" aria-label="Cerrar">✕</button></header>
+  <div class="items" id="items"></div>
+  <div class="pie">
+    <div class="total"><span>Total</span><b id="total"></b></div>
+    <label>Nombre o comercio *<input id="cNom" autocomplete="organization"></label>
+    <label>Código de cliente (si lo tenés)<input id="cCod" inputmode="numeric"></label>
+    <label>Dirección de entrega<input id="cDir" autocomplete="street-address"></label>
+    <label>Comentarios<textarea id="cObs"></textarea></label>
+    <p class="err" id="cErr" role="alert"></p>
+    <button type="button" class="enviar" id="enviar"><img src="img/whatsapp.png" alt="">Enviar pedido por WhatsApp</button>
+    <p class="aviso">Se abre WhatsApp con el pedido escrito: solo tenés que tocar enviar. Precios sujetos a posibles cambios.</p>
+    <button type="button" class="vaciar" id="vaciar">Vaciar pedido</button>
+  </div>
+</aside>
 <script>
 // Catalogo: [categoria, [[tamaño o tipo, [producto, ...]], ...]]
 // producto: [nombre, foto (img/bebidas/<foto>.jpg o ''; varias separadas con | se van turnando), [[unidades del bulto o 0 si es precio suelto, precio], ...]]
@@ -111,7 +162,9 @@ const BEBIDAS = [
       ['Schneider lata 473 cc', 'schneider-473', [[6, 11000]]],
       ['Heineken lata 473 cc', 'heineken-473', [[6, 16500]]],
       ['Imperial Golden lata 473 cc', 'imperial-golden-473', [[6, 13000]]],
-      ['Andes Origen sabores lata 473 cc', 'andes-sabores-473', [[6, 13000]]],
+      ['Andes Origen Rubia lata 473 cc', 'andes-rubia', [[6, 13000]]],
+      ['Andes Origen Roja lata 473 cc', 'andes-roja', [[6, 13000]]],
+      ['Andes Origen IPA Andina lata 473 cc', 'andes-ipa', [[6, 13000]]],
       ['Miller lata 473 cc', 'miller-473', [[6, 13000]]],
       ['Stella Artois lata 473 cc', 'stella-473', [[6, 13000]]],
     ]],
@@ -156,24 +209,43 @@ const BEBIDAS = [
       ['Gin Merle clásico', 'gin-merle-clasico', [[0, 9000]]],
       ['Gin Merle Pink botella', 'gin-merle-pink', [[0, 9500]]],
     ]],
-    ['Vodka', [
-      ['Skyy sabores', 'skyy-sabores|skyy-apricot', [[0, 9500]]],
-      ['Skyy Cosmic / Jungle', 'skyy-cosmic|skyy-jungle', [[0, 11900]]],
-      ['Smirnoff sabores botella', 'smirnoff-botella|smirnoff-botella-green', [[0, 8500]]],
-      ['Smirnoff Ice lata sabores', 'smirnoff-lata|smirnoff-lata-green', [[6, 16500]]],
-      ['Dr. Lemon sabores', 'dr-lemon|dr-lemon-limon', [[6, 13000]]],
+    ['Skyy', [
+      ['Skyy Infusions Raspberry', 'skyy-sabores', [[0, 9500]]],
+      ['Skyy Infusions Apricot (damasco)', 'skyy-apricot', [[0, 9500]]],
+      ['Skyy Cosmic', 'skyy-cosmic', [[0, 11900]]],
+      ['Skyy Jungle', 'skyy-jungle', [[0, 11900]]],
+    ]],
+    ['Smirnoff', [
+      ['Smirnoff botella Raspberry', 'smirnoff-botella', [[0, 8500]]],
+      ['Smirnoff botella Green Apple', 'smirnoff-botella-green', [[0, 8500]]],
+      ['Smirnoff Ice lata Red Berries', 'smirnoff-lata', [[6, 16500]]],
+      ['Smirnoff Ice lata Green Apple', 'smirnoff-lata-green', [[6, 16500]]],
+    ]],
+    ['Dr. Lemon', [
+      ['Dr. Lemon Vodka lata', 'dr-lemon', [[6, 13000]]],
+      ['Dr. Lemon Limón lata', 'dr-lemon-limon', [[6, 13000]]],
+    ]],
+    ['Gancia lata', [
+      ['Gancia lata 473 ml', 'gancia-lata', [[0, 13000]]],
+      ['Gancia lata 0.0 sin alcohol', 'gancia-lata-cero', [[0, 13000]]],
+    ]],
+    ['New Style', [
+      ['New Style Raspberry', 'new-style-raspberry', [[0, 4700]]],
+      ['New Style Ananá', '', [[0, 4700]]],
+      ['New Style Durazno', 'new-style-sabores', [[0, 4700]]],
+      ['New Style Chicle (Bubble Gum)', 'new-style-evolution', [[0, 4700]]],
     ]],
     ['Aperitivos y licores', [
       ['Gancia Americano 950 ml', 'gancia-950', [[0, 6500]]],
-      ['Gancia lata 473 ml', 'gancia-lata', [[0, 13000]]],
-      ['Gancia lata 0.0 sin alcohol', 'gancia-lata-cero', [[0, 13000]]],
-      ['New Style raspberry / ananá / durazno / chicle', 'new-style-evolution|new-style-raspberry', [[0, 4700]]],
       ['Licor de melón Cusenier', 'licor-melon-cusenier', [[0, 6500]]],
     ]],
   ]],
   ['Energizantes', [
     ['Energizantes', [
-      ['Monster Mango / Rosa / Negro', 'monster', [[6, 15500]]],
+      ['Monster Energy (negro)', 'monster-negro', [[6, 15500]]],
+      ['Monster Ultra (blanco)', 'monster-ultra', [[6, 15500]]],
+      ['Monster Ultra Rosá', 'monster-ultra-rosa', [[6, 15500]]],
+      ['Juice Monster Mango Loco', 'monster-mango', [[6, 15500]]],
       ['Speed XXL', 'speed', [[12, 26500]]],
       ['Speed chico', 'speed', [[24, 35500]]],
     ]],
@@ -213,9 +285,10 @@ const tarjeta = (p, cat, tam) => {
   const marca = nombre.split(/\s/)[0];
   const fotos = foto ? foto.split('|') : [];
   const img = fotos.length ? `<img src="img/bebidas/${esc(fotos[0])}.jpg?v=${FOTOS_V}" alt="${esc(nombre)}" loading="lazy"${fotos.length > 1 ? ` data-fotos="${esc(foto)}"` : ''} onerror="sinFoto(this,'${esc(marca)}')">` : `<span class="sin">${esc(marca)}</span>`;
-  const precios = ops.map(([u, pr]) => u
+  const precios = ops.map(([u, pr]) => (u
     ? `<div class="op"><div class="precio bulto"><span>Bulto x${u}</span><b>${fmt.format(pr)}</b></div><div class="precio"><span>Unidad</span><b>${fmt.format(pr / u)}</b></div></div>`
-    : `<div class="op"><div class="precio bulto"><span>Unidad</span><b>${fmt.format(pr)}</b></div></div>`).join('');
+    : `<div class="op"><div class="precio bulto"><span>Unidad</span><b>${fmt.format(pr)}</b></div></div>`)
+    + `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>`).join('');
   return `<article class="prod" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam))}">
     <div class="foto">${img}</div>
     <div class="datos">
@@ -270,6 +343,73 @@ document.getElementById('q').addEventListener('input', buscar);
 let giro = 0;
 setInterval(() => { giro++; document.querySelectorAll('img[data-fotos]').forEach(i => { const l = i.dataset.fotos.split('|'); i.src = `img/bebidas/${l[giro % l.length]}.jpg?v=${FOTOS_V}`; }); }, 2500);
 document.querySelectorAll('img[data-fotos]').forEach(i => i.dataset.fotos.split('|').slice(1).forEach(n => { new Image().src = `img/bebidas/${n}.jpg?v=${FOTOS_V}`; }));
+
+// ---------- Carrito: el cliente arma el pedido y lo manda por WhatsApp (pedido de Bruno, 31/10/2026) ----------
+const WSP = '5491144386153', KCARRO = 'bebidas-carrito';
+let CARRO = {};   // id -> {n, u, p, q}
+try { CARRO = JSON.parse(localStorage.getItem(KCARRO) || '{}') || {}; } catch (e) { CARRO = {}; }
+// se descartan productos que ya no estan en el catalogo o cambiaron de precio
+{ const vig = {}; document.querySelectorAll('.agr').forEach(a => vig[a.dataset.id] = +a.dataset.p);
+  for (const id of Object.keys(CARRO)) { if (!(id in vig)) delete CARRO[id]; else CARRO[id].p = vig[id]; } }
+const guardar = () => { try { localStorage.setItem(KCARRO, JSON.stringify(CARRO)); } catch (e) {} };
+const uTxt = u => +u ? `bulto x${u}` : 'unidad', uPl = (u, q) => +u ? (q === 1 ? 'bulto' : 'bultos') + ` x${u}` : (q === 1 ? 'unidad' : 'unidades');
+function pintarAgr(a){
+  const it = CARRO[a.dataset.id];
+  a.innerHTML = it
+    ? `<div class="cant"><button type="button" data-d="-1" aria-label="Uno menos">−</button><input type="number" min="0" inputmode="numeric" value="${it.q}" aria-label="Cantidad de ${esc(a.dataset.n)} (${uTxt(a.dataset.u)})"><button type="button" data-d="1" aria-label="Uno más">+</button></div>`
+    : `<button type="button" class="add">+ Agregar ${+a.dataset.u ? 'bulto' : 'unidad'}</button>`;
+}
+function poner(id, q, a){
+  q = Math.max(0, Math.floor(q) || 0);
+  if (q) CARRO[id] = {n: a.dataset.n, u: +a.dataset.u, p: +a.dataset.p, q}; else delete CARRO[id];
+  guardar(); document.querySelectorAll(`.agr[data-id="${CSS.escape(id)}"]`).forEach(pintarAgr); resumen();
+}
+function resumen(){
+  const L = Object.values(CARRO), n = L.reduce((s, x) => s + x.q, 0), t = L.reduce((s, x) => s + x.q * x.p, 0);
+  $b.hidden = !n; document.body.classList.toggle('con-carro', !!n);
+  document.getElementById('barraTxt').textContent = `Ver pedido · ${n} ${n === 1 ? 'artículo' : 'artículos'} · ${fmt.format(t)}`;
+  document.getElementById('total').textContent = fmt.format(t);
+  document.getElementById('items').innerHTML = L.length ? Object.entries(CARRO).map(([id, x]) => `<div class="it" data-id="${esc(id)}">
+      <div><div class="n">${esc(x.n)}</div><div class="u">${uTxt(x.u)} · ${fmt.format(x.p)}</div></div><div class="s">${fmt.format(x.q * x.p)}</div>
+      <div class="cant"><button type="button" data-d="-1" aria-label="Uno menos">−</button><input type="number" min="0" inputmode="numeric" value="${x.q}" aria-label="Cantidad de ${esc(x.n)}"><button type="button" data-d="1" aria-label="Uno más">+</button></div>
+      <button type="button" class="quitar">Quitar</button></div>`).join('') : '<p class="aviso" style="padding:16px 0">Todavía no agregaste productos.</p>';
+}
+const $b = document.getElementById('barra');
+const agrDe = id => document.querySelector(`.agr[data-id="${CSS.escape(id)}"]`);
+document.querySelectorAll('.agr').forEach(pintarAgr);
+document.getElementById('cat').addEventListener('click', e => {
+  const a = e.target.closest('.agr'); if (!a) return; const id = a.dataset.id, q = (CARRO[id] || {}).q || 0;
+  if (e.target.closest('.add')) { poner(id, 1, a); a.querySelector('input')?.focus(); }
+  else if (e.target.dataset.d) poner(id, q + +e.target.dataset.d, a);
+});
+document.getElementById('cat').addEventListener('change', e => { const a = e.target.closest('.agr'); if (a && e.target.matches('input')) poner(a.dataset.id, +e.target.value, a); });
+document.getElementById('items').addEventListener('click', e => {
+  const it = e.target.closest('.it'); if (!it) return; const id = it.dataset.id, x = CARRO[id], a = agrDe(id); if (!x || !a) return;
+  if (e.target.closest('.quitar')) poner(id, 0, a); else if (e.target.dataset.d) poner(id, x.q + +e.target.dataset.d, a);
+});
+document.getElementById('items').addEventListener('change', e => { const it = e.target.closest('.it'), a = it && agrDe(it.dataset.id); if (a && e.target.matches('input')) poner(it.dataset.id, +e.target.value, a); });
+const panel = document.getElementById('carro'), fondo = document.getElementById('fondo');
+function abrir(){ panel.hidden = fondo.hidden = false; document.getElementById('cerrar').focus(); }
+function cerrar(){ panel.hidden = fondo.hidden = true; $b.focus(); }
+$b.addEventListener('click', abrir); fondo.addEventListener('click', cerrar); document.getElementById('cerrar').addEventListener('click', cerrar);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) cerrar(); });
+document.getElementById('vaciar').addEventListener('click', () => { if (confirm('¿Vaciar el pedido?')) { CARRO = {}; guardar(); document.querySelectorAll('.agr').forEach(pintarAgr); resumen(); } });
+// datos del cliente: se recuerdan en este telefono para el proximo pedido
+const CAMPOS = ['cNom', 'cCod', 'cDir'];
+try { const d = JSON.parse(localStorage.getItem('bebidas-cliente') || '{}'); CAMPOS.forEach(k => { if (d[k]) document.getElementById(k).value = d[k]; }); } catch (e) {}
+document.getElementById('enviar').addEventListener('click', () => {
+  const L = Object.values(CARRO), v = k => document.getElementById(k).value.trim(), err = document.getElementById('cErr');
+  if (!L.length) { err.textContent = 'Agregá al menos un producto.'; return; }
+  if (!v('cNom')) { err.textContent = 'Poné tu nombre o el de tu comercio.'; document.getElementById('cNom').focus(); return; }
+  err.textContent = '';
+  try { localStorage.setItem('bebidas-cliente', JSON.stringify(Object.fromEntries(CAMPOS.map(k => [k, v(k)])))); } catch (e) {}
+  const t = L.reduce((s, x) => s + x.q * x.p, 0);
+  const txt = ['*Pedido · Catálogo de Bebidas*', '', `Cliente: ${v('cNom')}`, v('cCod') ? `Código: ${v('cCod')}` : '', v('cDir') ? `Dirección: ${v('cDir')}` : '', '',
+    ...L.map(x => `• ${x.q} ${uPl(x.u, x.q)} — ${x.n} — ${fmt.format(x.q * x.p)}`), '', `*Total: ${fmt.format(t)}*`, v('cObs') ? `\nComentarios: ${v('cObs')}` : '']
+    .filter((l, i, a) => l !== '' || (a[i - 1] !== '' && i > 0)).join('\n');
+  window.open(`https://wa.me/${WSP}?text=${encodeURIComponent(txt)}`, '_blank', 'noopener');
+});
+resumen();
 
 // Descargar PDF: carga todas las fotos (vienen diferidas) y abre "Guardar como PDF" con el nombre del catalogo y la fecha
 async function descargarPDF(){
