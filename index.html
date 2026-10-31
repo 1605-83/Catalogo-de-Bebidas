@@ -74,7 +74,10 @@ h1,h3{animation:letras 6s linear infinite}
 .wasap img{width:28px;height:28px;border-radius:50%}
 .wasap:hover span{text-decoration:underline}.wasap:focus-visible{outline:3px solid var(--claro);outline-offset:2px;border-radius:6px}
 /* carrito: el cliente arma el pedido y lo manda por WhatsApp */
-.agr{margin-top:6px}
+.agrs{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.agr{display:flex;align-items:center;gap:6px}
+.agr .et{font-size:.72rem;color:var(--muted);font-weight:700}
+.agr .add.u{background:#fff;color:#128C4A;border:2px solid #25D366;padding:5px 10px}
 .agr .add{font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;color:#fff;background:#25D366;border:0;border-radius:8px;padding:7px 12px}
 .agr .add:hover{filter:brightness(.93)}
 .cant{display:inline-flex;align-items:center;border:2px solid #25D366;border-radius:8px;overflow:hidden}
@@ -289,7 +292,8 @@ const tarjeta = (p, cat, tam) => {
   const precios = ops.map(([u, pr]) => (u
     ? `<div class="op"><div class="precio bulto"><span>Bulto x${u}</span><b>${fmt.format(pr)}</b></div><div class="precio"><span>Unidad</span><b>${fmt.format(pr / u)}</b></div></div>`
     : `<div class="op"><div class="precio bulto"><span>Unidad</span><b>${fmt.format(pr)}</b></div></div>`)
-    + `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>`).join('');
+    // se puede pedir por bulto o suelto por unidad (al precio por unidad que se muestra)
+    + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? Math.round(pr / u) : pr}"></div></div>`).join('');
   return `<article class="prod" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam))}">
     <div class="foto">${img}</div>
     <div class="datos">
@@ -357,8 +361,8 @@ const uTxt = u => +u ? `bulto x${u}` : 'unidad', uPl = (u, q) => +u ? (q === 1 ?
 function pintarAgr(a){
   const it = CARRO[a.dataset.id];
   a.innerHTML = it
-    ? `<div class="cant"><button type="button" data-d="-1" aria-label="Uno menos">−</button><input type="number" min="0" inputmode="numeric" value="${it.q}" aria-label="Cantidad de ${esc(a.dataset.n)} (${uTxt(a.dataset.u)})"><button type="button" data-d="1" aria-label="Uno más">+</button></div>`
-    : `<button type="button" class="add">+ Agregar ${+a.dataset.u ? 'bulto' : 'unidad'}</button>`;
+    ? `<span class="et">${+a.dataset.u ? 'Bultos' : 'Unidades'}</span><div class="cant"><button type="button" data-d="-1" aria-label="Uno menos">−</button><input type="number" min="0" inputmode="numeric" value="${it.q}" aria-label="Cantidad de ${esc(a.dataset.n)} (${uTxt(a.dataset.u)})"><button type="button" data-d="1" aria-label="Uno más">+</button></div>`
+    : `<button type="button" class="add${+a.dataset.u ? '' : ' u'}">+ ${+a.dataset.u ? 'Bulto' : 'Unidad'}</button>`;
 }
 function poner(id, q, a){
   q = Math.max(0, Math.floor(q) || 0);
