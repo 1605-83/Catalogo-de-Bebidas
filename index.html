@@ -303,7 +303,7 @@ const tarjeta = (p, cat, tam) => {
     <div class="foto">${img}</div>
     <div class="datos">
       <div class="desc">${esc(nombre)}</div>
-      <div class="det">${ops.some(o => o[0]) ? 'Bulto x' + ops.filter(o => o[0]).map(o => o[0]).join(' o x') : 'Precio por unidad'}</div>
+      ${ops.some(o => o[0]) ? '' : '<div class="det">Precio por unidad</div>'}
       ${precios}
     </div>
   </article>`;
