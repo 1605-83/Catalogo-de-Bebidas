@@ -224,6 +224,7 @@ const BEBIDAS = [
     ['Dr. Lemon', [
       ['Dr. Lemon Vodka lata', 'dr-lemon', [[6, 13000]]],
       ['Dr. Lemon Limón lata', 'dr-lemon-limon', [[6, 13000]]],
+      ['Dr. Lemon Green Apple lata', 'dr-lemon-green-apple', [[6, 13000]]],
     ]],
     ['Gancia lata', [
       ['Gancia lata 473 ml', 'gancia-lata', [[0, 13000]]],
@@ -231,7 +232,7 @@ const BEBIDAS = [
     ]],
     ['New Style', [
       ['New Style Raspberry', 'new-style-raspberry', [[0, 4700]]],
-      ['New Style Ananá', '', [[0, 4700]]],
+      ['New Style Ananá', '-', [[0, 4700]]],   // '-' = recuadro de la foto en blanco
       ['New Style Durazno', 'new-style-sabores', [[0, 4700]]],
       ['New Style Chicle (Bubble Gum)', 'new-style-evolution', [[0, 4700]]],
     ]],
@@ -283,8 +284,8 @@ function sinFoto(img, texto){ const s = document.createElement('span'); s.classN
 const tarjeta = (p, cat, tam) => {
   const [nombre, foto, ops] = p;
   const marca = nombre.split(/\s/)[0];
-  const fotos = foto ? foto.split('|') : [];
-  const img = fotos.length ? `<img src="img/bebidas/${esc(fotos[0])}.jpg?v=${FOTOS_V}" alt="${esc(nombre)}" loading="lazy"${fotos.length > 1 ? ` data-fotos="${esc(foto)}"` : ''} onerror="sinFoto(this,'${esc(marca)}')">` : `<span class="sin">${esc(marca)}</span>`;
+  const fotos = foto && foto !== '-' ? foto.split('|') : [];
+  const img = foto === '-' ? '' : fotos.length ? `<img src="img/bebidas/${esc(fotos[0])}.jpg?v=${FOTOS_V}" alt="${esc(nombre)}" loading="lazy"${fotos.length > 1 ? ` data-fotos="${esc(foto)}"` : ''} onerror="sinFoto(this,'${esc(marca)}')">` : `<span class="sin">${esc(marca)}</span>`;
   const precios = ops.map(([u, pr]) => (u
     ? `<div class="op"><div class="precio bulto"><span>Bulto x${u}</span><b>${fmt.format(pr)}</b></div><div class="precio"><span>Unidad</span><b>${fmt.format(pr / u)}</b></div></div>`
     : `<div class="op"><div class="precio bulto"><span>Unidad</span><b>${fmt.format(pr)}</b></div></div>`)
