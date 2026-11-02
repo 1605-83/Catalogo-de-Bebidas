@@ -76,6 +76,8 @@ h1,h3{animation:letras 6s linear infinite}
 /* carrito: el cliente arma el pedido y lo manda por WhatsApp */
 .agrs{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 .agr{display:flex;align-items:center;gap:6px}
+.sello{align-self:flex-start;font-size:.72rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#7A4B00;background:#FFD54A;border-radius:999px;padding:3px 10px}
+.prod.dest{box-shadow:0 0 0 3px #FFD54A}
 .agr .et{font-size:.72rem;color:var(--muted);font-weight:700}
 .agr .add.u{background:#fff;color:#128C4A;border:2px solid #25D366;padding:5px 10px}
 .agr .add{font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;color:#fff;background:#25D366;border:0;border-radius:8px;padding:7px 12px}
@@ -157,6 +159,12 @@ body.con-carro{padding-bottom:90px}
 // Catalogo: [categoria, [[tamaño o tipo, [producto, ...]], ...]]
 // producto: [nombre, foto (img/bebidas/<foto>.jpg o ''; varias separadas con | se van turnando), [[unidades del bulto o 0 si es precio suelto, precio], ...]]
 const BEBIDAS = [
+  // primero en la lista, con el cartel "Producto destacado" (4º dato true)
+  ['Producto destacado', [
+    ['Producto destacado', [
+      ['Brül Lager lata 1 L', 'brul-1l', [[6, 21000]], true],
+    ]],
+  ]],
   ['Cervezas', [
     ['Latas 473 cc', [
       ['Brahma lata 473 cc', 'brahma-473', [[6, 11000]]],
@@ -184,9 +192,6 @@ const BEBIDAS = [
       ['361 botella', '361-botella', [[6, 11500]]],
       ['Budweiser 710 cc', '', [[4, 11000]]],
       ['Corona botella 710 cc', 'corona-710', [[12, 52000]]],
-    ]],
-    ['Lata 1 litro', [
-      ['Brül Lager lata 1 L', 'brul-1l', [[6, 21000]]],
     ]],
   ]],
   ['Vinos', [
@@ -290,7 +295,7 @@ const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(
 function sinFoto(img, texto){ const s = document.createElement('span'); s.className = 'sin'; s.textContent = texto; img.replaceWith(s); }
 
 const tarjeta = (p, cat, tam) => {
-  const [nombre, foto, ops] = p;
+  const [nombre, foto, ops, dest] = p;
   const marca = nombre.split(/\s/)[0];
   const fotos = foto && foto !== '-' ? foto.split('|') : [];
   const img = foto === '-' ? '' : fotos.length ? `<img src="img/bebidas/${esc(fotos[0])}.jpg?v=${FOTOS_V}" alt="${esc(nombre)}" loading="lazy"${fotos.length > 1 ? ` data-fotos="${esc(foto)}"` : ''} onerror="sinFoto(this,'${esc(marca)}')">` : `<span class="sin">${esc(marca)}</span>`;
@@ -299,9 +304,10 @@ const tarjeta = (p, cat, tam) => {
     : `<div class="op"><div class="precio bulto"><span>Unidad</span><b>${fmt.format(pr)}</b></div></div>`)
     // por bulto siempre; suelto por unidad solo los de SUELTOS (al precio por unidad que se muestra)
     + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}${!u || SUELTOS.test(nombre) ? `<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? Math.round(pr / u) : pr}"></div>` : ''}</div>`).join('');
-  return `<article class="prod" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam))}">
+  return `<article class="prod${dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' cervezas' : '')))}">
     <div class="foto">${img}</div>
     <div class="datos">
+      ${dest ? '<div class="sello">⭐ Producto destacado</div>' : ''}
       <div class="desc">${esc(nombre)}</div>
       ${ops.some(o => o[0]) ? '' : '<div class="det">Precio por unidad</div>'}
       ${precios}
@@ -367,7 +373,7 @@ function pintarAgr(a){
   const it = CARRO[a.dataset.id];
   a.innerHTML = it
     ? `<span class="et">${+a.dataset.u ? 'Bultos' : 'Unidades'}</span><div class="cant"><button type="button" data-d="-1" aria-label="Uno menos">−</button><input type="number" min="0" inputmode="numeric" value="${it.q}" aria-label="Cantidad de ${esc(a.dataset.n)} (${uTxt(a.dataset.u)})"><button type="button" data-d="1" aria-label="Uno más">+</button></div>`
-    : `<button type="button" class="add${+a.dataset.u ? '' : ' u'}">+ ${+a.dataset.u ? 'Bulto' : 'Unidad'}</button>`;
+    : `<button type="button" class="add${+a.dataset.u ? '' : ' u'}">🛒 Comprar ${+a.dataset.u ? 'bulto' : 'unidad'}</button>`;
 }
 function poner(id, q, a){
   q = Math.max(0, Math.floor(q) || 0);
