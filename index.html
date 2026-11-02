@@ -174,10 +174,11 @@ body.con-carro{padding-bottom:90px}
 // Catalogo: [categoria, [[tamaño o tipo, [producto, ...]], ...]]
 // producto: [nombre, foto (img/bebidas/<foto>.jpg o ''; varias separadas con | se van turnando), [[unidades del bulto o 0 si es precio suelto, precio], ...]]
 const BEBIDAS = [
-  // primero en la lista, con el cartel "Producto destacado" (4º dato true)
+  // primero en la lista, con el cartel "Producto destacado" (4º dato: categoría para el buscador)
   ['Producto destacado', [
     ['Producto destacado', [
-      ['Brül Lager lata 1 L', 'brul-1l', [[6, 21000]], true],
+      ['Más Loco que una Cabra Durazno / Frutos Rojos', 'mas-loco-cabra', [[6, 25500]], 'vinos'],
+      ['Brül Lager lata 1 L', 'brul-1l', [[6, 21000]], 'cervezas'],
     ]],
   ]],
   ['Cervezas', [
@@ -302,7 +303,7 @@ const BEBIDAS = [
   ]],
 ];
 // productos que tambien se venden sueltos por unidad; el resto solo por bulto (pedido de Bruno, 31/10/2026)
-const SUELTOS = /skyy|santa julia|cosecha tard|federico de alvear|new style|fernet (branca|1882 750)|corona botella 710|gin merle|smirnoff botella|gancia americano|licor de mel|whisky|caf. al co/i;
+const SUELTOS = /skyy|m.s loco que una cabra|santa julia|cosecha tard|federico de alvear|new style|fernet (branca|1882 750)|corona botella 710|gin merle|smirnoff botella|gancia americano|licor de mel|whisky|caf. al co/i;
 const FOTOS_V = '2';   // cambiar cuando se reemplazan las fotos
 const fmt = new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',minimumFractionDigits:0,maximumFractionDigits:0});
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -319,7 +320,7 @@ const tarjeta = (p, cat, tam) => {
     : `<div class="op"><div class="precio bulto"><span>Unidad</span><b>${fmt.format(pr)}</b></div></div>`)
     // por bulto siempre; suelto por unidad solo los de SUELTOS (al precio por unidad que se muestra)
     + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}${!u || SUELTOS.test(nombre) ? `<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? Math.round(pr / u) : pr}"></div>` : ''}</div>`).join('');
-  return `<article class="prod${dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' cervezas' : '')))}">
+  return `<article class="prod${dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
     <div class="foto">${img}</div>
     <div class="datos">
       ${dest ? '<div class="sello">⭐ Producto destacado</div>' : ''}
