@@ -23,7 +23,11 @@ body{margin:0;background:var(--bg);color:var(--blanco);font-family:var(--f-ui);f
 header{padding-block:20px 12px}
 h1{margin:0;font-size:1.3rem;font-weight:800;color:var(--blanco)}
 .sub{margin:4px 0 0;color:#D5E4FF;font-size:.85rem}
-.arriba{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);margin:0 -16px;padding:10px 16px 0;border-bottom:1px solid rgba(255,255,255,.35)}
+/* fondo de neón solo detrás del encabezado y el buscador; la barra pegada al bajar vuelve a negro */
+body::before{content:"";position:absolute;left:0;right:0;top:0;height:var(--alto-cab,230px);z-index:0;background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),url(img/fondo-neon.jpg) center/auto 100% repeat-x #000;pointer-events:none}
+.wrap{position:relative;z-index:1}
+.arriba.pegada{background:var(--bg)!important}
+.arriba{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:transparent;margin:0 -16px;padding:10px 16px 0;border-bottom:1px solid rgba(255,255,255,.35)}
 .linea{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap}
 .buscar{display:block;flex:0 1 300px;min-width:0;width:100%;font:inherit;font-size:16px;padding:6px 10px;border:0;border-radius:8px;background:#fff;color:var(--fg)}
 .pagos{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;font-size:.8rem;color:#fff}
@@ -366,6 +370,11 @@ function buscar(){
 }
 document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => tildar(b.dataset.seg)));
 document.getElementById('q').addEventListener('input', buscar);
+// el fondo de neón cubre hasta el final del buscador; cuando la barra queda pegada arriba se pone negra
+{ const arr = document.querySelector('.arriba');
+  const medir = () => { document.documentElement.style.setProperty('--alto-cab', (document.getElementById('cat').getBoundingClientRect().top + scrollY) + 'px'); pegar(); };
+  const pegar = () => arr.classList.toggle('pegada', arr.getBoundingClientRect().top <= 1 && scrollY > 0);
+  addEventListener('scroll', pegar, {passive: true}); addEventListener('resize', medir); medir(); }
 // Productos con varias fotos (sabores): se turnan cada 2,5 segundos
 let giro = 0;
 setInterval(() => { giro++; document.querySelectorAll('img[data-fotos]').forEach(i => { const l = i.dataset.fotos.split('|'); i.src = `img/bebidas/${l[giro % l.length]}.jpg?v=${FOTOS_V}`; }); }, 2500);
