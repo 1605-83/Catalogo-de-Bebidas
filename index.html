@@ -24,7 +24,12 @@ header{padding-block:20px 12px}
 h1{margin:0;font-size:1.3rem;font-weight:800;color:var(--blanco)}
 .sub{margin:4px 0 0;color:#D5E4FF;font-size:.85rem}
 .arriba{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);margin:0 -16px;padding:10px 16px 0;border-bottom:1px solid rgba(255,255,255,.35)}
-.buscar{display:block;width:100%;font:inherit;font-size:16px;padding:10px 12px;border:0;border-radius:10px;background:#fff;color:var(--fg)}
+.linea{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap}
+.buscar{display:block;flex:0 1 300px;min-width:0;width:100%;font:inherit;font-size:16px;padding:6px 10px;border:0;border-radius:8px;background:#fff;color:var(--fg)}
+.pagos{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;font-size:.8rem;color:#fff}
+.pagos b{color:var(--claro)}
+.pagos span{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border:1px solid rgba(255,255,255,.35);border-radius:999px;white-space:nowrap}
+.pagos svg{width:20px;height:14px;flex:0 0 auto}
 .buscar:focus-visible{outline:3px solid var(--claro);outline-offset:1px}
 .cuenta{font-size:.8rem;color:#D5E4FF;margin:6px 0 0}
 nav{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:10px 0}
@@ -132,7 +137,13 @@ body.con-carro{padding-bottom:90px}
     <p class="sub">Precios sujetos a posibles cambios</p>
   </div><div class="acciones"><a class="wasap" href="https://wa.me/5491144386153" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp al 11 4438-6153"><img src="img/whatsapp.png" alt="" width="28" height="28"><span>11 4438-6153</span></a><button type="button" class="pdf" id="btnPdf" onclick="descargarPDF()" title="Guardar el catálogo como PDF">⬇ Descargar PDF</button></div></header>
   <div class="arriba">
-    <input class="buscar" id="q" type="search" placeholder="Buscar (ej. Quilmes, fernet, 710)" aria-label="Buscar producto" autocomplete="off">
+    <div class="linea">
+      <input class="buscar" id="q" type="search" placeholder="Buscar (ej. Quilmes, fernet, 710)" aria-label="Buscar producto" autocomplete="off">
+      <div class="pagos">
+        <b>Pagos:</b><span>💵 Efectivo</span><span>Mercado Pago · alias <b>bruno.83.mp</b></span>
+        <span><svg viewBox="0 0 20 14" aria-hidden="true"><path d="M1 2h11v8H1z" fill="#7FC4FF"/><path d="M12 5h4l3 3v2h-7z" fill="#fff"/><circle cx="5" cy="11.5" r="2" fill="#fff" stroke="#000"/><circle cx="15" cy="11.5" r="2" fill="#fff" stroke="#000"/></svg>Envíos</span>
+      </div>
+    </div>
     <p class="cuenta" id="cuenta" hidden></p>
     <nav id="nav" aria-label="Categorías"></nav>
   </div>
