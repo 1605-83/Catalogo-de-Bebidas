@@ -33,6 +33,7 @@ body::before{content:"";position:absolute;left:0;right:0;top:0;height:var(--alto
 .pagos{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;font-size:.8rem;color:#fff}
 .pagos b{color:var(--claro)}
 .pagos span{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border:1px solid rgba(255,255,255,.35);border-radius:999px;white-space:nowrap}
+.pagos .mp{width:22px;height:auto;flex:0 0 auto}
 .pagos svg{width:20px;height:14px;flex:0 0 auto}
 .buscar:focus-visible{outline:3px solid var(--claro);outline-offset:1px}
 .cuenta{font-size:.8rem;color:#D5E4FF;margin:6px 0 0}
@@ -144,7 +145,7 @@ body.con-carro{padding-bottom:90px}
     <div class="linea">
       <input class="buscar" id="q" type="search" placeholder="Buscar (ej. Quilmes, fernet, 710)" aria-label="Buscar producto" autocomplete="off">
       <div class="pagos">
-        <b>Pagos:</b><span>💵 Efectivo</span><span>Mercado Pago · alias <b>bruno.83.mp</b></span>
+        <b>Pagos:</b><span>💵 Efectivo</span><span><img class="mp" src="img/mercadopago.png" alt="" width="22" height="16">Mercado Pago · alias <b>bruno.83.mp</b></span>
         <span><svg viewBox="0 0 20 14" aria-hidden="true"><path d="M1 2h11v8H1z" fill="#7FC4FF"/><path d="M12 5h4l3 3v2h-7z" fill="#fff"/><circle cx="5" cy="11.5" r="2" fill="#fff" stroke="#000"/><circle cx="15" cy="11.5" r="2" fill="#fff" stroke="#000"/></svg>Envíos</span>
       </div>
     </div>
