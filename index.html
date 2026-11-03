@@ -223,6 +223,7 @@ const BEBIDAS = [
       ['Hormiga Negra Malbec', 'hormiga-negra', [[6, 15000]]],
       ['Cosecha Tardía Norton', 'cosecha-tardia', [[6, 25200]]],
       ['Santa Julia Chenin dulce', 'santa-julia-dulce', [[6, 49200]]],
+      ['Colón Selecto Durazno', 'colon-selecto-durazno', [[6, 43200]]],
     ]],
   ]],
   ['Aperitivos', [
@@ -304,7 +305,7 @@ const BEBIDAS = [
   ]],
 ];
 // productos que tambien se venden sueltos por unidad; el resto solo por bulto (pedido de Bruno, 31/10/2026)
-const SUELTOS = /skyy|m.s loco que una cabra|santa julia|cosecha tard|federico de alvear|new style|fernet (branca|1882 750)|corona botella 710|gin merle|smirnoff botella|gancia americano|licor de mel|whisky|caf. al co/i;
+const SUELTOS = /skyy|col.n selecto|m.s loco que una cabra|santa julia|cosecha tard|federico de alvear|new style|fernet (branca|1882 750)|corona botella 710|gin merle|smirnoff botella|gancia americano|licor de mel|whisky|caf. al co/i;
 const FOTOS_V = '2';   // cambiar cuando se reemplazan las fotos
 const fmt = new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',minimumFractionDigits:0,maximumFractionDigits:0});
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
