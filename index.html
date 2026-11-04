@@ -84,6 +84,9 @@ header.cab{display:flex;justify-content:space-between;align-items:flex-start;gap
 h1,h3{animation:letras 6s linear infinite}
 @media (prefers-reduced-motion:reduce){.prod,.tam,h1,h3{animation-duration:30s}}/* WhatsApp al lado del boton del PDF */
 .acciones{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.musica{position:fixed;left:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;width:46px;height:46px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.75);font-size:1.3rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.musica[hidden]{display:none}.musica:focus-visible{outline:3px solid var(--claro);outline-offset:2px}
+@media print{.musica{display:none!important}}
 .wasap{display:flex;align-items:center;gap:6px;color:#fff;text-decoration:none;font-weight:700;font-size:.9rem;white-space:nowrap}
 .wasap img{width:28px;height:28px;border-radius:50%}
 .wasap:hover span{text-decoration:underline}.wasap:focus-visible{outline:3px solid var(--claro);outline-offset:2px;border-radius:6px}
@@ -158,6 +161,7 @@ body.con-carro{padding-bottom:90px}
   </div>
   <div id="cat"></div>
 </div>
+<button type="button" class="musica" id="musica" hidden aria-pressed="false" title="Prender la música">🔇</button>
 <button type="button" class="barra-carro" id="barra" hidden aria-haspopup="dialog">🛒 <span id="barraTxt"></span></button>
 <div class="fondo" id="fondo" hidden></div>
 <aside class="carro" id="carro" role="dialog" aria-modal="true" aria-labelledby="tCarro" hidden>
@@ -475,6 +479,25 @@ async function descargarPDF(){
   b.disabled=false; b.textContent=t0;
   window.print(); setTimeout(()=>{ document.title=tit; },1000);
 }
+
+// ---------- Música de fondo (pedido de Bruno, 04/11/2026) ----------
+// Los navegadores no dejan sonar una página sola: arranca con el primer toque del cliente. El botón 🔊/🔇 la prende y apaga,
+// y si el cliente la apagó, queda apagada las próximas veces. Sin archivo de música (MUSICA) el botón no aparece.
+const MUSICA = 'musica/fondo.mp3', KMUS = 'bebidas-musica';
+(async () => {
+  try { const r = await fetch(MUSICA, {method: 'HEAD'}); if (!r.ok) return; } catch (e) { return; }
+  const au = new Audio(MUSICA); au.loop = true; au.volume = .35; au.preload = 'none';
+  const btn = document.getElementById('musica'); btn.hidden = false;
+  let apagada = false; try { apagada = localStorage.getItem(KMUS) === 'off'; } catch (e) {}
+  const pintar = () => { const on = !au.paused; btn.textContent = on ? '🔊' : '🔇'; btn.setAttribute('aria-pressed', on); btn.title = on ? 'Apagar la música' : 'Prender la música'; };
+  const sonar = () => au.play().then(pintar).catch(pintar);
+  btn.addEventListener('click', () => { if (au.paused) { apagada = false; sonar(); } else { apagada = true; au.pause(); pintar(); }
+    try { localStorage.setItem(KMUS, apagada ? 'off' : 'on'); } catch (e) {} });
+  const primero = e => { if (e.target.closest && e.target.closest('#musica')) return; quitar(); if (!apagada) sonar(); };
+  const quitar = () => ['pointerdown', 'keydown', 'touchstart'].forEach(t => removeEventListener(t, primero, true));
+  ['pointerdown', 'keydown', 'touchstart'].forEach(t => addEventListener(t, primero, true));
+  pintar();
+})();
 </script>
 </body>
 </html>
