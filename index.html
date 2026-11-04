@@ -314,6 +314,7 @@ const BEBIDAS = [
       ['Café al coñac Cusenier petaca', 'petaca-cafe-conac', [[24, 50400]]],
     ]],
   ]],
+['Aceite de oliva', [    ['Aceite de oliva', [      ['Aceite de oliva Olivaria extra virgen 500 ml vidrio', 'olivaria-500-vidrio', [[12, 70800]]],      ['Aceite de oliva Olivaria extra virgen 500 ml plástico', 'olivaria-500-pet', [[15, 58500]]],      ['Aceite de oliva Olivaria extra virgen 2 litros', 'olivaria-2l', [[6, 75000]]],    ]],  ]],
   ['Alfajores', [
     ['Alfajores', [
       ['Rasta negro', 'rasta-negro', [[18, 17800]]],
@@ -324,7 +325,7 @@ const BEBIDAS = [
   ]],
 ];
 // productos que tambien se venden sueltos por unidad; el resto solo por bulto (pedido de Bruno, 31/10/2026)
-const SUELTOS = /skyy|col.n selecto|m.s loco que una cabra|santa julia|cosecha tard|federico de alvear|new style|fernet (branca|1882 750)|corona botella 710|gin merle|smirnoff botella|gancia americano|licor de mel|whisky|caf. al co/i;
+const SUELTOS = /skyy|olivaria|col.n selecto|m.s loco que una cabra|santa julia|cosecha tard|federico de alvear|new style|fernet (branca|1882 750)|corona botella 710|gin merle|smirnoff botella|gancia americano|licor de mel|whisky|caf. al co/i;
 const FOTOS_V = '2';   // cambiar cuando se reemplazan las fotos
 const fmt = new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',minimumFractionDigits:0,maximumFractionDigits:0});
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
