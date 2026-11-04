@@ -489,11 +489,14 @@ async function descargarPDF(){
 
 // ---------- Música de fondo (pedido de Bruno, 04/11/2026) ----------
 // Los navegadores no dejan sonar una página sola: arranca con el primer toque del cliente. El botón 🔊/🔇 la prende y apaga,
-// y si el cliente la apagó, queda apagada las próximas veces. Sin archivo de música (MUSICA) el botón no aparece.
-const MUSICA = 'musica/fondo.mp3', KMUS = 'bebidas-musica';
+// y si el cliente la apagó, queda apagada las próximas veces. Los temas suenan uno después del otro y vuelven a empezar.
+// Temas libres de derechos de Pixabay Music (licencia de contenido de Pixabay, uso comercial permitido), de mondamusic.
+const MUSICA = ['musica/dance-club.mp3', 'musica/festival-party-dance.mp3'], KMUS = 'bebidas-musica';
 (async () => {
-  try { const r = await fetch(MUSICA, {method: 'HEAD'}); if (!r.ok) return; } catch (e) { return; }
-  const au = new Audio(MUSICA); au.loop = true; au.volume = .35; au.preload = 'none';
+  try { const r = await fetch(MUSICA[0], {method: 'HEAD'}); if (!r.ok) return; } catch (e) { return; }
+  let tema = 0;
+  const au = new Audio(MUSICA[0]); au.volume = .35; au.preload = 'none'; au.loop = MUSICA.length === 1;
+  au.addEventListener('ended', () => { tema = (tema + 1) % MUSICA.length; au.src = MUSICA[tema]; au.play().catch(() => {}); });
   const btn = document.getElementById('musica'); btn.hidden = false;
   let apagada = false; try { apagada = localStorage.getItem(KMUS) === 'off'; } catch (e) {}
   const pintar = () => { const on = !au.paused; btn.textContent = on ? '🔊' : '🔇'; btn.setAttribute('aria-pressed', on); btn.title = on ? 'Apagar la música' : 'Prender la música'; };
