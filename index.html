@@ -95,6 +95,12 @@ h1,h3{animation:letras 6s linear infinite}
 .agr{display:flex;align-items:center;gap:6px}
 .sello{align-self:flex-start;font-size:.72rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#7A4B00;background:#FFD54A;border-radius:999px;padding:3px 10px}
 .prod.dest{box-shadow:0 0 0 3px #FFD54A}
+.prod.oferta{box-shadow:0 0 0 3px #E10600}
+.oferta-sello{align-self:flex-start;font-size:.9rem;font-weight:900;letter-spacing:.06em;color:#fff;background:#E10600;border:2px solid #fff;box-shadow:0 0 0 2px #E10600,0 2px 8px rgba(225,6,0,.45);border-radius:999px;padding:3px 12px;transform-origin:left center;animation:latido 1.1s ease-in-out infinite}
+@keyframes latido{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+@media (prefers-reduced-motion:reduce){.oferta-sello{animation-duration:2.5s}}
+@media print{.oferta-sello{animation:none}}
+.antes{font-size:.8rem;color:#888;text-decoration:line-through}
 .agr .et{font-size:.72rem;color:var(--muted);font-weight:700}
 .agr .add.u{background:#fff;color:#128C4A;border:2px solid #25D366;padding:5px 10px}
 .agr .add{font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;color:#fff;background:#25D366;border:0;border-radius:8px;padding:7px 12px}
@@ -183,11 +189,12 @@ body.con-carro{padding-bottom:90px}
 // Catalogo: [categoria, [[tamaño o tipo, [producto, ...]], ...]]
 // producto: [nombre, foto (img/bebidas/<foto>.jpg o ''; varias separadas con | se van turnando), [[unidades del bulto o 0 si es precio suelto, precio], ...]]
 const BEBIDAS = [
-  // primero en la lista, con el cartel "Producto destacado" (4º dato: categoría para el buscador)
+  // primero en la lista, con el cartel "Producto destacado" (4º dato: categoría para el buscador; 5º: precio anterior del bulto → cartel OFERTA)
   ['Producto destacado', [
     ['Producto destacado', [
       ['Más Loco que una Cabra Durazno / Frutos Rojos', 'mas-loco-cabra', [[6, 25500]], 'vinos'],
       ['Brül Lager lata 1 L', 'brul-1l', [[6, 21000]], 'cervezas'],
+      ['Heineken lata 710 cc', 'heineken-710', [[6, 22999]], 'cervezas', 24500],
     ]],
   ]],
   ['Cervezas', [
@@ -210,7 +217,6 @@ const BEBIDAS = [
     ['710 cc', [
       ['Brahma lata 710 cc', 'brahma-710', [[4, 12000]]],
       ['Quilmes Clásica lata 710 cc', 'quilmes-710', [[4, 12000]]],
-      ['Heineken lata 710 cc', 'heineken-710', [[6, 24500]]],
       ['Schneider lata 710 cc', 'schneider-710', [[6, 17000]]],
       ['Imperial Golden lata 710 cc', 'imperial-golden-710', [[6, 19000]]],
       ['361 latón 710 cc', '361-laton-710', [[6, 11000]]],
@@ -349,7 +355,7 @@ const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(
 function sinFoto(img, texto){ const s = document.createElement('span'); s.className = 'sin'; s.textContent = texto; img.replaceWith(s); }
 
 const tarjeta = (p, cat, tam) => {
-  const [nombre, foto, ops, dest] = p;
+  const [nombre, foto, ops, dest, antes] = p;
   const marca = nombre.split(/\s/)[0];
   const fotos = foto && foto !== '-' ? foto.split('|') : [];
   const img = foto === '-' ? '' : fotos.length ? `<img src="img/bebidas/${esc(fotos[0])}.jpg?v=${FOTOS_V}" alt="${esc(nombre)}" loading="lazy"${fotos.length > 1 ? ` data-fotos="${esc(foto)}"` : ''} onerror="sinFoto(this,'${esc(marca)}')">` : `<span class="sin">${esc(marca)}</span>`;
@@ -358,10 +364,11 @@ const tarjeta = (p, cat, tam) => {
     : `<div class="op"><div class="precio bulto"><span>Unidad</span><b>${fmt.format(pr)}</b></div></div>`)
     // por bulto siempre; suelto por unidad solo los de SUELTOS (al precio por unidad que se muestra)
     + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}${!u || SUELTOS.test(nombre) ? `<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? Math.round(pr / u) : pr}"></div>` : ''}</div>`).join('');
-  return `<article class="prod${dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
+  return `<article class="prod${antes ? ' oferta' : dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
     <div class="foto">${img}</div>
     <div class="datos">
-      ${dest ? '<div class="sello">⭐ Producto destacado</div>' : ''}
+      ${antes ? '<div class="oferta-sello">🔥 OFERTA</div>' : dest ? '<div class="sello">⭐ Producto destacado</div>' : ''}
+      ${antes ? `<div class="antes">Antes ${fmt.format(antes)} el bulto</div>` : ''}
       <div class="desc">${esc(nombre)}</div>
       ${ops.some(o => o[0]) ? '' : '<div class="det">Precio por unidad</div>'}
       ${precios}
