@@ -189,7 +189,14 @@ body.con-carro{padding-bottom:90px}
 // Catalogo: [categoria, [[tamaño o tipo, [producto, ...]], ...]]
 // producto: [nombre, foto (img/bebidas/<foto>.jpg o ''; varias separadas con | se van turnando), [[unidades del bulto o 0 si es precio suelto, precio], ...]]
 const BEBIDAS = [
-  // primero en la lista, con el cartel "Producto destacado" (4º dato: categoría para el buscador; 5º: precio anterior del bulto → cartel OFERTA)
+  // Promo combos (Promo Finde XXL, pedido de Bruno, 06/11/2026): precio por combo; los nombres empiezan con "Combo "
+  ['Promo combos', [
+    ['Promo combos', [
+      ['Combo 2 Baly Cereza 250 cc + 1 Más Loco que una Cabra Frutos Rojos', 'combo-baly-mas-loco', [[0, 7999]], 'promo finde xxl energizantes vinos'],
+      ['Combo 2 Monster Pipeline Punch + 1 Más Loco que una Cabra Frutos Rojos', 'combo-monster-mas-loco', [[0, 8999]], 'promo finde xxl energizantes vinos'],
+    ]],
+  ]],
+  // con el cartel "Producto destacado" (4º dato: categoría para el buscador; 5º: precio anterior del bulto → cartel OFERTA)
   ['Producto destacado', [
     ['Producto destacado', [
       ['Más Loco que una Cabra Durazno / Frutos Rojos', 'mas-loco-cabra', [[6, 25500]], 'vinos'],
@@ -353,6 +360,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 function sinFoto(img, texto){ const s = document.createElement('span'); s.className = 'sin'; s.textContent = texto; img.replaceWith(s); }
 
+const esCombo = n => /^Combo /.test(n);
 const tarjeta = (p, cat, tam) => {
   const [nombre, foto, ops, dest, antes] = p;
   const marca = nombre.split(/\s/)[0];
@@ -360,16 +368,16 @@ const tarjeta = (p, cat, tam) => {
   const img = foto === '-' ? '' : fotos.length ? `<img src="img/bebidas/${esc(fotos[0])}.jpg?v=${FOTOS_V}" alt="${esc(nombre)}" loading="lazy"${fotos.length > 1 ? ` data-fotos="${esc(foto)}"` : ''} onerror="sinFoto(this,'${esc(marca)}')">` : `<span class="sin">${esc(marca)}</span>`;
   const precios = ops.map(([u, pr]) => (u
     ? `<div class="op"><div class="precio bulto"><span>Bulto x${u}</span><b>${fmt.format(pr)}</b></div><div class="precio"><span>Unidad</span><b>${fmt.format(pr / u)}</b></div></div>`
-    : `<div class="op"><div class="precio bulto"><span>Unidad</span><b>${fmt.format(pr)}</b></div></div>`)
+    : `<div class="op"><div class="precio bulto"><span>${esCombo(nombre) ? 'Combo' : 'Unidad'}</span><b>${fmt.format(pr)}</b></div></div>`)
     // por bulto siempre; suelto por unidad solo los de SUELTOS (al precio por unidad que se muestra)
     + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}${!u || SUELTOS.test(nombre) ? `<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? Math.round(pr / u) : pr}"></div>` : ''}</div>`).join('');
-  return `<article class="prod${antes ? ' oferta' : dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
+  return `<article class="prod${antes || esCombo(nombre) ? ' oferta' : dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
     <div class="foto">${img}</div>
     <div class="datos">
-      ${antes ? '<div class="oferta-sello">🔥 OFERTA</div>' : dest ? '<div class="sello">⭐ Producto destacado</div>' : ''}
+      ${antes ? '<div class="oferta-sello">🔥 OFERTA</div>' : esCombo(nombre) ? '<div class="oferta-sello">🎉 PROMO FINDE XXL</div>' : dest ? '<div class="sello">⭐ Producto destacado</div>' : ''}
       ${antes ? `<div class="antes">Antes ${fmt.format(antes)} el bulto</div>` : ''}
       <div class="desc">${esc(nombre)}</div>
-      ${ops.some(o => o[0]) ? '' : '<div class="det">Precio por unidad</div>'}
+      ${ops.some(o => o[0]) ? '' : `<div class="det">Precio por ${esCombo(nombre) ? 'combo' : 'unidad'}</div>`}
       ${precios}
     </div>
   </article>`;
@@ -437,8 +445,8 @@ const uTxt = u => +u ? `bulto x${u}` : 'unidad', uPl = (u, q) => +u ? (q === 1 ?
 function pintarAgr(a){
   const it = CARRO[a.dataset.id];
   a.innerHTML = it
-    ? `<span class="et">${+a.dataset.u ? 'Bultos' : 'Unidades'}</span><div class="cant"><button type="button" data-d="-1" aria-label="Uno menos">−</button><input type="number" min="0" inputmode="numeric" value="${it.q}" aria-label="Cantidad de ${esc(a.dataset.n)} (${uTxt(a.dataset.u)})"><button type="button" data-d="1" aria-label="Uno más">+</button></div>`
-    : `<button type="button" class="add${+a.dataset.u ? '' : ' u'}">🛒 Comprar ${+a.dataset.u ? 'bulto' : 'unidad'}</button>`;
+    ? `<span class="et">${+a.dataset.u ? 'Bultos' : esCombo(a.dataset.n) ? 'Combos' : 'Unidades'}</span><div class="cant"><button type="button" data-d="-1" aria-label="Uno menos">−</button><input type="number" min="0" inputmode="numeric" value="${it.q}" aria-label="Cantidad de ${esc(a.dataset.n)} (${uTxt(a.dataset.u)})"><button type="button" data-d="1" aria-label="Uno más">+</button></div>`
+    : `<button type="button" class="add${+a.dataset.u ? '' : ' u'}">🛒 Comprar ${+a.dataset.u ? 'bulto' : esCombo(a.dataset.n) ? 'combo' : 'unidad'}</button>`;
 }
 function poner(id, q, a){
   q = Math.max(0, Math.floor(q) || 0);
@@ -451,7 +459,7 @@ function resumen(){
   document.getElementById('barraTxt').textContent = `Ver pedido · ${n} ${n === 1 ? 'artículo' : 'artículos'} · ${fmt.format(t)}`;
   document.getElementById('total').textContent = fmt.format(t);
   document.getElementById('items').innerHTML = L.length ? Object.entries(CARRO).map(([id, x]) => `<div class="it" data-id="${esc(id)}">
-      <div><div class="n">${esc(x.n)}</div><div class="u">${uTxt(x.u)} · ${fmt.format(x.p)}</div></div><div class="s">${fmt.format(x.q * x.p)}</div>
+      <div><div class="n">${esc(x.n)}</div><div class="u">${esCombo(x.n) ? 'combo' : uTxt(x.u)} · ${fmt.format(x.p)}</div></div><div class="s">${fmt.format(x.q * x.p)}</div>
       <div class="cant"><button type="button" data-d="-1" aria-label="Uno menos">−</button><input type="number" min="0" inputmode="numeric" value="${x.q}" aria-label="Cantidad de ${esc(x.n)}"><button type="button" data-d="1" aria-label="Uno más">+</button></div>
       <button type="button" class="quitar">Quitar</button></div>`).join('') : '<p class="aviso" style="padding:16px 0">Todavía no agregaste productos.</p>';
 }
@@ -486,7 +494,7 @@ document.getElementById('enviar').addEventListener('click', () => {
   try { localStorage.setItem('bebidas-cliente', JSON.stringify(Object.fromEntries(CAMPOS.map(k => [k, v(k)])))); } catch (e) {}
   const t = L.reduce((s, x) => s + x.q * x.p, 0);
   const txt = ['*Pedido · Catálogo de Bebidas*', '', `Cliente: ${v('cNom')}`, v('cCod') ? `Código: ${v('cCod')}` : '', v('cDir') ? `Dirección: ${v('cDir')}` : '', '',
-    ...L.map(x => `• ${x.q} ${uPl(x.u, x.q)} — ${x.n} — ${fmt.format(x.q * x.p)}`), '', `*Total: ${fmt.format(t)}*`, v('cObs') ? `\nComentarios: ${v('cObs')}` : '']
+    ...L.map(x => `• ${x.q} ${esCombo(x.n) ? (x.q === 1 ? 'combo' : 'combos') : uPl(x.u, x.q)} — ${x.n} — ${fmt.format(x.q * x.p)}`), '', `*Total: ${fmt.format(t)}*`, v('cObs') ? `\nComentarios: ${v('cObs')}` : '']
     .filter((l, i, a) => l !== '' || (a[i - 1] !== '' && i > 0)).join('\n');
   window.open(`https://wa.me/${WSP}?text=${encodeURIComponent(txt)}`, '_blank', 'noopener');
 });
