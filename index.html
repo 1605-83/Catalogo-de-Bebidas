@@ -6,6 +6,10 @@
 <title>Catálogo de Bebidas</title>
 <meta property="og:title" content="Catálogo de Bebidas">
 <meta property="og:description" content="Precios sujetos a posibles cambios">
+<meta property="og:image" content="https://1605-83.github.io/Catalogo-de-Bebidas/img/og-promo.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
@@ -96,6 +100,17 @@ h1,h3{animation:letras 6s linear infinite}
 .sello{align-self:flex-start;font-size:.72rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#7A4B00;background:#FFD54A;border-radius:999px;padding:3px 10px}
 .prod.dest{box-shadow:0 0 0 3px #FFD54A}
 .prod.oferta{box-shadow:0 0 0 3px #E10600}
+/* combos: el flyer entero arriba y grande; cartel mas chico */
+.prod.combo{grid-template-columns:1fr;align-items:start}
+.prod.combo .foto{width:100%;height:auto;aspect-ratio:800/875;border:0}
+.prod.combo .foto img{object-fit:cover}
+.prod.combo .oferta-sello{font-size:.66rem;letter-spacing:.03em;padding:2px 8px;border-width:1.5px}
+/* foto ampliada al tocarla */
+.foto img{cursor:zoom-in}
+.zoom{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.88);display:grid;place-items:center;padding:16px;cursor:zoom-out}
+.zoom[hidden]{display:none}
+.zoom img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;background:#fff}
+.zoom button{position:absolute;top:12px;right:12px;font-size:1.4rem;line-height:1;background:#fff;color:#000;border:0;border-radius:999px;width:40px;height:40px;cursor:pointer}
 .oferta-sello{align-self:flex-start;font-size:.9rem;font-weight:900;letter-spacing:.06em;color:#fff;background:#E10600;border:2px solid #fff;box-shadow:0 0 0 2px #E10600,0 2px 8px rgba(225,6,0,.45);border-radius:999px;padding:3px 12px;transform-origin:left center;animation:latido 1.1s ease-in-out infinite}
 @keyframes latido{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
 @media (prefers-reduced-motion:reduce){.oferta-sello{animation-duration:2.5s}}
@@ -354,7 +369,7 @@ const BEBIDAS = [
 ];
 // productos que tambien se venden sueltos por unidad; el resto solo por bulto (pedido de Bruno, 31/10/2026)
 const SUELTOS = /skyy|olivaria|col.n selecto|m.s loco que una cabra|santa julia|cosecha tard|federico de alvear|new style|fernet (branca|1882 750)|corona botella 710|gin merle|smirnoff botella|gancia americano|licor de mel|whisky|caf. al co/i;
-const FOTOS_V = '2';   // cambiar cuando se reemplazan las fotos
+const FOTOS_V = '3';   // cambiar cuando se reemplazan las fotos
 const fmt = new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',minimumFractionDigits:0,maximumFractionDigits:0});
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
@@ -371,7 +386,7 @@ const tarjeta = (p, cat, tam) => {
     : `<div class="op"><div class="precio bulto"><span>${esCombo(nombre) ? 'Combo' : 'Unidad'}</span><b>${fmt.format(pr)}</b></div></div>`)
     // por bulto siempre; suelto por unidad solo los de SUELTOS (al precio por unidad que se muestra)
     + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}${!u || SUELTOS.test(nombre) ? `<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? Math.round(pr / u) : pr}"></div>` : ''}</div>`).join('');
-  return `<article class="prod${antes || esCombo(nombre) ? ' oferta' : dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
+  return `<article class="prod${esCombo(nombre) ? ' oferta combo' : antes ? ' oferta' : dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
     <div class="foto">${img}</div>
     <div class="datos">
       ${antes ? '<div class="oferta-sello">🔥 OFERTA</div>' : esCombo(nombre) ? '<div class="oferta-sello">🎉 PROMO FINDE XXL</div>' : dest ? '<div class="sello">⭐ Producto destacado</div>' : ''}
@@ -531,6 +546,14 @@ const MUSICA = ['musica/dance-club.mp3', 'musica/festival-party-dance.mp3'], KMU
   const quitar = () => ['pointerdown', 'keydown', 'touchstart'].forEach(t => removeEventListener(t, primero, true));
   ['pointerdown', 'keydown', 'touchstart'].forEach(t => addEventListener(t, primero, true));
   pintar();
+})();
+// ---------- Foto ampliada: al tocar una foto se ve grande (pedido de Bruno, 07/11/2026) ----------
+(() => {
+  const z = document.createElement('div'); z.className = 'zoom'; z.hidden = true; z.setAttribute('role', 'dialog'); z.setAttribute('aria-label', 'Foto ampliada');
+  z.innerHTML = '<img alt=""><button type="button" aria-label="Cerrar">✕</button>'; document.body.appendChild(z);
+  const im = z.querySelector('img'), cerrar = () => { z.hidden = true; im.removeAttribute('src'); };
+  document.getElementById('cat').addEventListener('click', e => { const i = e.target.closest('.foto img'); if (!i) return; im.src = i.currentSrc || i.src; im.alt = i.alt; z.hidden = false; z.querySelector('button').focus(); });
+  z.addEventListener('click', cerrar); addEventListener('keydown', e => { if (e.key === 'Escape' && !z.hidden) cerrar(); });
 })();
 </script>
 </body>
