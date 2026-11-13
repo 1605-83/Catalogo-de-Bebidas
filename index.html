@@ -201,18 +201,11 @@ body.con-carro{padding-bottom:90px}
 // Catalogo: [categoria, [[tamaño o tipo, [producto, ...]], ...]]
 // producto: [nombre, foto (img/bebidas/<foto>.jpg o ''; varias separadas con | se van turnando), [[unidades del bulto o 0 si es precio suelto, precio], ...]]
 const BEBIDAS = [
-  // Promo combos (Promo Finde XXL, pedido de Bruno, 06/11/2026): precio por combo; los nombres empiezan con "Combo "
-  ['Promo combos', [
-    ['Promo combos', [
-      ['Combo 2 Baly Cereza 250 cc + 1 Más Loco que una Cabra Frutos Rojos', 'combo-baly-mas-loco', [[0, 7999]], 'promo finde xxl energizantes vinos'],
-      ['Combo 2 Monster Pipeline Punch + 1 Más Loco que una Cabra Frutos Rojos', 'combo-monster-mas-loco', [[0, 8999]], 'promo finde xxl energizantes vinos'],
-    ]],
-  ]],
   // con el cartel "Producto destacado" (4º dato: categoría para el buscador; 5º: precio anterior del bulto → cartel OFERTA)
   ['Producto destacado', [
     ['Producto destacado', [
-      ['Combo 2 Baly Cereza 250 cc + 1 Más Loco que una Cabra Frutos Rojos', 'combo-baly-mas-loco', [[0, 7999]], 'promo finde xxl energizantes vinos'],
-      ['Combo 2 Monster Pipeline Punch + 1 Más Loco que una Cabra Frutos Rojos', 'combo-monster-mas-loco', [[0, 8999]], 'promo finde xxl energizantes vinos'],
+      ['Combo 2 Baly Cereza 250 cc + 1 Más Loco que una Cabra Frutos Rojos', 'combo-baly-mas-loco', [[0, 7999]], 'combos energizantes vinos'],
+      ['Combo 2 Monster Pipeline Punch + 1 Más Loco que una Cabra Frutos Rojos', 'combo-monster-mas-loco', [[0, 8999]], 'combos energizantes vinos'],
       ['Más Loco que una Cabra Durazno / Frutos Rojos', 'mas-loco-cabra', [[6, 25500]], 'vinos'],
       ['Brül Lager lata 1 L', 'brul-1l', [[6, 21000]], 'cervezas'],
       ['Heineken lata 710 cc', 'heineken-710', [[6, 22999]], 'cervezas', 24500],
@@ -247,9 +240,9 @@ const BEBIDAS = [
     ]],
   ]],
   ['Vinos', [
-    ['Promo combos', [
-      ['Combo 2 Baly Cereza 250 cc + 1 Más Loco que una Cabra Frutos Rojos', 'combo-baly-mas-loco', [[0, 7999]], 'promo finde xxl energizantes vinos'],
-      ['Combo 2 Monster Pipeline Punch + 1 Más Loco que una Cabra Frutos Rojos', 'combo-monster-mas-loco', [[0, 8999]], 'promo finde xxl energizantes vinos'],
+    ['Combos', [
+      ['Combo 2 Baly Cereza 250 cc + 1 Más Loco que una Cabra Frutos Rojos', 'combo-baly-mas-loco', [[0, 7999]], 'combos energizantes vinos'],
+      ['Combo 2 Monster Pipeline Punch + 1 Más Loco que una Cabra Frutos Rojos', 'combo-monster-mas-loco', [[0, 8999]], 'combos energizantes vinos'],
     ]],
     ['1125 y 1225 ml', [
       ['Santa Filomena 1125 ml', 'santa-filomena', [[6, 17500]]],
@@ -389,10 +382,10 @@ const tarjeta = (p, cat, tam) => {
     : `<div class="op"><div class="precio bulto"><span>${esCombo(nombre) ? 'Combo' : 'Unidad'}</span><b>${fmt.format(pr)}</b></div></div>`)
     // por bulto siempre; suelto por unidad solo los de SUELTOS (al precio por unidad que se muestra)
     + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}${!u || SUELTOS.test(nombre) ? `<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? Math.round(pr / u) : pr}"></div>` : ''}</div>`).join('');
-  return `<article class="prod${esCombo(nombre) ? ' oferta combo' : antes ? ' oferta' : dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
+  return `<article class="prod${esCombo(nombre) ? ' dest combo' : antes ? ' oferta' : dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
     <div class="foto">${img}</div>
     <div class="datos">
-      ${antes ? '<div class="oferta-sello">🔥 OFERTA</div>' : esCombo(nombre) ? '<div class="oferta-sello">🎉 PROMO FINDE XXL</div>' : dest ? '<div class="sello">★ Producto destacado</div>' : ''}
+      ${antes ? '<div class="oferta-sello">🔥 OFERTA</div>' : esCombo(nombre) || dest ? '<div class="sello">★ Producto destacado</div>' : ''}
       ${antes ? `<div class="antes">Antes ${fmt.format(antes)} el bulto</div>` : ''}
       <div class="desc">${esc(nombre)}</div>
       ${ops.some(o => o[0]) ? '' : `<div class="det">Precio por ${esCombo(nombre) ? 'combo' : 'unidad'}</div>`}
