@@ -199,14 +199,14 @@ body.con-carro{padding-bottom:90px}
 </aside>
 <script>
 // Catalogo: [categoria, [[tamaño o tipo, [producto, ...]], ...]]
-// producto: [nombre, foto (img/bebidas/<foto>.jpg o ''; varias separadas con | se van turnando), [[unidades del bulto o 0 si es precio suelto, precio], ...]]
+// producto: [nombre, foto (img/bebidas/<foto>.jpg o ''; varias separadas con | se van turnando), [[unidades del bulto o 0 si es precio suelto, precio, precio por unidad opcional (si no, bulto / unidades)], ...]]
 const BEBIDAS = [
   // con el cartel "Producto destacado" (4º dato: categoría para el buscador; 5º: precio anterior del bulto → cartel OFERTA)
   ['Producto destacado', [
     ['Producto destacado', [
       ['Combo 2 Baly Cereza 250 cc + 1 Más Loco que una Cabra Frutos Rojos', 'combo-baly-mas-loco', [[0, 7999]], 'combos energizantes vinos'],
       ['Combo 2 Monster Pipeline Punch + 1 Más Loco que una Cabra Frutos Rojos', 'combo-monster-mas-loco', [[0, 8999]], 'combos energizantes vinos'],
-      ['Más Loco que una Cabra Durazno / Frutos Rojos', 'mas-loco-cabra', [[6, 25500]], 'vinos'],
+      ['Más Loco que una Cabra Durazno / Frutos Rojos', 'mas-loco-cabra', [[6, 24999, 4250]], 'vinos'],
       ['Brül Lager lata 1 L', 'brul-1l', [[6, 21000]], 'cervezas'],
       ['Heineken lata 710 cc', 'heineken-710', [[6, 22999]], 'cervezas', 24500],
     ]],
@@ -373,11 +373,11 @@ const tarjeta = (p, cat, tam) => {
   const marca = nombre.split(/\s/)[0];
   const fotos = foto && foto !== '-' ? foto.split('|') : [];
   const img = foto === '-' ? '' : fotos.length ? `<img src="img/bebidas/${esc(fotos[0])}.jpg?v=${FOTOS_V}" alt="${esc(nombre)}" loading="lazy"${fotos.length > 1 ? ` data-fotos="${esc(foto)}"` : ''} onerror="sinFoto(this,'${esc(marca)}')">` : `<span class="sin">${esc(marca)}</span>`;
-  const precios = ops.map(([u, pr]) => (u
-    ? `<div class="op"><div class="precio bulto"><span>Bulto x${u}</span><b>${fmt.format(pr)}</b></div><div class="precio"><span>Unidad</span><b>${fmt.format(pr / u)}</b></div></div>`
+  const precios = ops.map(([u, pr, pu]) => (u
+    ? `<div class="op"><div class="precio bulto"><span>Bulto x${u}</span><b>${fmt.format(pr)}</b></div><div class="precio"><span>Unidad</span><b>${fmt.format(pu || pr / u)}</b></div></div>`
     : `<div class="op"><div class="precio bulto"><span>${esCombo(nombre) ? 'Combo' : 'Unidad'}</span><b>${fmt.format(pr)}</b></div></div>`)
     // por bulto siempre; suelto por unidad solo los de SUELTOS (al precio por unidad que se muestra)
-    + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}${!u || SUELTOS.test(nombre) ? `<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? Math.round(pr / u) : pr}"></div>` : ''}</div>`).join('');
+    + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}${!u || SUELTOS.test(nombre) ? `<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? (pu || Math.round(pr / u)) : pr}"></div>` : ''}</div>`).join('');
   return `<article class="prod${esCombo(nombre) ? ' dest combo' : antes ? ' oferta' : dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
     <div class="foto">${img}</div>
     <div class="datos">
