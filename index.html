@@ -501,7 +501,8 @@ document.getElementById('enviar').addEventListener('click', () => {
   try { localStorage.setItem('bebidas-cliente', JSON.stringify(Object.fromEntries(CAMPOS.map(k => [k, v(k)])))); } catch (e) {}
   const t = L.reduce((s, x) => s + x.q * x.p, 0);
   const txt = ['*Pedido · Catálogo de Bebidas*', '', `Cliente: ${v('cNom')}`, v('cCod') ? `Código: ${v('cCod')}` : '', v('cDir') ? `Dirección: ${v('cDir')}` : '', '',
-    ...L.map(x => `• ${x.q} ${esCombo(x.n) ? (x.q === 1 ? 'combo' : 'combos') : uPl(x.u, x.q)} — ${x.n} — ${fmt.format(x.q * x.p)}`), '', `*Total: ${fmt.format(t)}*`, v('cObs') ? `\nComentarios: ${v('cObs')}` : '']
+    // renglon corto (pedido de Bruno, 20/11/2026): cantidad pedida, producto, unidades del bulto y precio
+    ...L.map(x => `${x.q} × ${x.n}${x.u ? ` x${x.u}` : ''} ${fmt.format(x.q * x.p)}`), '', `*Total: ${fmt.format(t)}*`, v('cObs') ? `\nComentarios: ${v('cObs')}` : '']
     .filter((l, i, a) => l !== '' || (a[i - 1] !== '' && i > 0)).join('\n');
   window.open(`https://wa.me/${WSP}?text=${encodeURIComponent(txt)}`, '_blank', 'noopener');
 });
