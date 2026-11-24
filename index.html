@@ -162,12 +162,25 @@ body.con-carro{padding-bottom:90px}
   .lista{gap:8px}
   .prod{grid-template-columns:1fr;padding:8px;align-items:start}
   .prod .datos{align-items:flex-start}
-  /* PDF: como maximo 2 productos por hoja (un renglon de 2) y la foto entera, sin recortar (pedido de Bruno, 24/11/2026) */
-  .foto{width:100%;height:125mm;overflow:visible;display:flex;align-items:center;justify-content:center}
-  .foto img{width:auto;height:auto;max-width:100%;max-height:125mm;object-fit:contain}
-  .prod{break-inside:avoid;page-break-inside:avoid}
-  .desc{white-space:normal;overflow:visible}
-  .desc{font-size:13px}.precio.bulto b{font-size:1.25rem}
+  /* PDF (pedido de Bruno, 24/11/2026): fondo blanco (sin huecos negros), 2 renglones de 2 por hoja,
+     y en cada tarjeta la foto, el nombre y el precio grandes ocupando todo el cuadro */
+  html,body{background:#fff!important;color:#000}
+  body::before{display:none!important}
+  h1,h2,h3,.sub,footer{color:#000!important}
+  h2 small,h3 small{color:#444}
+  section{border-top-color:#000}
+  .tam{border-top-color:#888;animation:none}
+  .prod{border:1.5px solid #888;box-shadow:none!important;padding:8px;gap:6px}
+  .foto{width:100%;height:82mm;border:0;overflow:visible;display:flex;align-items:center;justify-content:center}
+  .foto img{width:100%;height:100%;max-width:100%;max-height:82mm;object-fit:contain}
+  .datos{width:100%;gap:2px}
+  .desc{white-space:normal;overflow:visible;font-size:17px;line-height:1.2}
+  .det{font-size:12px}
+  .op{gap:2px 16px}
+  .precio span{font-size:13px}
+  .precio b{font-size:20px!important}
+  .precio.bulto b{font-size:26px!important}
+  .sello,.oferta-sello{font-size:11px}
   section{break-inside:auto}
   h2,h3{break-after:avoid}
 }
