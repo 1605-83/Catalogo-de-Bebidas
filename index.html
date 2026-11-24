@@ -162,7 +162,11 @@ body.con-carro{padding-bottom:90px}
   .lista{gap:8px}
   .prod{grid-template-columns:1fr;padding:8px;align-items:start}
   .prod .datos{align-items:flex-start}
-  .foto{width:100%;height:62mm}
+  /* PDF: como maximo 2 productos por hoja (un renglon de 2) y la foto entera, sin recortar (pedido de Bruno, 24/11/2026) */
+  .foto{width:100%;height:125mm;overflow:visible;display:flex;align-items:center;justify-content:center}
+  .foto img{width:auto;height:auto;max-width:100%;max-height:125mm;object-fit:contain}
+  .prod{break-inside:avoid;page-break-inside:avoid}
+  .desc{white-space:normal;overflow:visible}
   .desc{font-size:13px}.precio.bulto b{font-size:1.25rem}
   section{break-inside:auto}
   h2,h3{break-after:avoid}
