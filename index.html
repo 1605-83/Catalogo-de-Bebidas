@@ -158,8 +158,12 @@ body.con-carro{padding-bottom:90px}
   body{padding:0 4mm;font-size:11px}
   .pdf,.arriba{display:none!important}
   .lista{grid-template-columns:repeat(2,1fr);gap:6px}
-  .prod{grid-template-columns:70px 1fr;padding:6px}
-  .foto{width:70px;height:70px}
+  /* PDF: de a dos por renglón con la foto grande arriba (pedido de Bruno, 24/11/2026) */
+  .lista{gap:8px}
+  .prod{grid-template-columns:1fr;padding:8px;align-items:start}
+  .prod .datos{align-items:flex-start}
+  .foto{width:100%;height:62mm}
+  .desc{font-size:13px}.precio.bulto b{font-size:1.25rem}
   section{break-inside:auto}
   h2,h3{break-after:avoid}
 }
