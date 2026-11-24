@@ -153,7 +153,7 @@ body.con-carro{padding-bottom:90px}
 @media print{.agr,.barra-carro,.carro,.fondo{display:none!important}}
 @media print{
   .prod,.tam,h1,h3{animation:none!important}
-  @page{size:A4;margin:10mm}
+  @page{size:A4 landscape;margin:10mm}
   html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{padding:0 4mm;font-size:11px}
   .pdf,.arriba{display:none!important}
@@ -162,8 +162,8 @@ body.con-carro{padding-bottom:90px}
   .lista{gap:8px}
   .prod{grid-template-columns:1fr;padding:8px;align-items:start}
   .prod .datos{align-items:flex-start}
-  /* PDF (pedido de Bruno, 24/11/2026): fondo blanco (sin huecos negros) y UN producto por hoja,
-     con la foto bien grande y el nombre y el precio grandes abajo, ocupando todo el cuadro */
+  /* PDF (pedido de Bruno, 24/11/2026): fondo blanco (sin huecos negros) y UN producto por hoja acostada,
+     con la foto bien grande a la izquierda y el nombre y el precio grandes al costado, ocupando todo el cuadro */
   .lista{grid-template-columns:1fr!important;gap:0}
   html,body{background:#fff!important;color:#000}
   body::before{display:none!important}
@@ -173,17 +173,17 @@ body.con-carro{padding-bottom:90px}
   h3{font-size:26px}
   section{border-top-color:#000}
   .tam{border-top-color:#888;animation:none}
-  .prod{border:1.5px solid #888;box-shadow:none!important;padding:6mm;gap:4mm;min-height:200mm;align-content:center}
-  .foto{width:100%;height:125mm;border:0;overflow:visible;display:flex;align-items:center;justify-content:center}
-  .foto img{width:100%;height:100%;max-width:100%;max-height:125mm;object-fit:contain}
-  .datos{width:100%;gap:2mm;align-items:center!important;text-align:center}
-  .desc{white-space:normal;overflow:visible;font-size:42px;line-height:1.1}
+  .prod{border:1.5px solid #888;box-shadow:none!important;padding:6mm;gap:8mm;min-height:128mm;grid-template-columns:1.1fr 1fr!important;align-items:center!important}
+  .foto{width:100%;height:120mm;border:0;overflow:visible;display:flex;align-items:center;justify-content:center}
+  .foto img{width:100%;height:100%;max-width:100%;max-height:120mm;object-fit:contain}
+  .datos{width:100%;gap:4mm;align-items:flex-start!important;text-align:left}
+  .desc{white-space:normal;overflow:visible;font-size:46px;line-height:1.1}
   .det{font-size:22px}
-  .op{gap:2mm 10mm;justify-content:center}
+  .op{flex-direction:column;align-items:flex-start;gap:3mm}
   .precio span{font-size:24px}
   .precio b{font-size:40px!important}
-  .precio.bulto b{font-size:58px!important}
-  .sello,.oferta-sello{font-size:15px;align-self:center!important}
+  .precio.bulto b{font-size:64px!important}
+  .sello,.oferta-sello{font-size:15px;align-self:flex-start!important}
   section{break-inside:auto}
   h2,h3{break-after:avoid}
 }
