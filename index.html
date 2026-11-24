@@ -79,6 +79,15 @@ h3{margin:0 0 12px;font-size:1rem;font-weight:800;color:var(--claro);display:fle
 .precio b{font-family:var(--f-num);font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600;font-size:1.2rem}
 .precio.bulto b{font-size:1.5rem;color:var(--marca)}
 @media (max-width:430px){.precio.bulto b{font-size:1.3rem}.precio b{font-size:1.1rem}}
+/* nombre y precios centrados en su columna y sin salirse de la tarjeta (pedido de Bruno, 24/11/2026) */
+.datos{align-items:center;text-align:center}
+.op{justify-content:center}
+.precio{flex-wrap:wrap;justify-content:center;column-gap:6px;row-gap:0}
+.agrs{justify-content:center}
+.sello,.oferta-sello{align-self:center!important;white-space:normal;max-width:100%;text-align:center}
+.prod{overflow:hidden}
+.oferta-sello{transform-origin:center}
+@media (min-width:1050px){:root{--fotoT:150px}.precio.bulto b{font-size:1.35rem}.precio b{font-size:1.1rem}}
 @media print{.precio b{font-size:inherit}.precio.bulto b{font-size:1.05rem}}   /* precios grandes en pantalla (pedido de Bruno, 22/11/2026); al imprimir como antes */
 footer{margin-top:32px;color:#D5E4FF;font-size:.8rem}
 header.cab{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
@@ -161,27 +170,29 @@ body.con-carro{padding-bottom:90px}
   .lista{gap:8px}
   .prod{grid-template-columns:1fr;padding:8px;align-items:start}
   .prod .datos{align-items:flex-start}
-  /* PDF (pedido de Bruno, 24/11/2026): fondo blanco, UN producto por hoja parada (el celular no respeta la hoja acostada).
+  /* PDF (pedido de Bruno, 24/11/2026): fondo negro con la tarjeta de cada producto en blanco, UN producto por hoja parada (el celular no respeta la hoja acostada).
      Cada tarjeta ocupa toda la hoja: la foto se estira para llenar el espacio y abajo van el nombre y el precio,
      todo centrado. Las alturas estan pensadas para hoja Carta (la mas corta); en A4 sobra un poco abajo. */
-  @page{margin:8mm}
-  html,body{background:#fff!important;color:#000}
+  @page{margin:0}   /* sin margen de hoja: el negro llega a los bordes; los espacios los dan el relleno del cuerpo y el borde negro de las tarjetas */
+  html,body{background:#000!important;color:#fff}
+  body{padding:0 6mm!important}
   body::before{display:none!important}
-  h1,h2,h3,.sub,footer{color:#000!important}
-  header.cab{padding:0 0 3mm}
-  h2 small,h3 small{color:#444;font-size:16px}
+  h1,h2,h3,.sub,footer{color:#fff!important}
+  header.cab{padding:6mm 0 3mm}
+  h2 small,h3 small{color:#ccc;font-size:16px}
   h2{font-size:34px;line-height:1.2;margin:0 0 3mm}
   h3{font-size:26px;line-height:1.2;margin:0 0 3mm}
-  section{margin:0!important;padding-top:2mm!important;border-top:2px solid #000;break-inside:auto}
+  section{margin:0!important;padding-top:6mm!important;border-top:0;break-inside:auto}
   section:not(:first-of-type){break-before:page}
-  .tam{margin:0!important;padding-top:2mm!important;border-top-color:#888;animation:none}
+  .tam{margin:0!important;padding-top:2mm!important;border-top:2px solid #fff;animation:none}
+  .tam:not(:first-of-type){padding-top:6mm!important;border-top:0}
   .tam:not(:first-of-type){break-before:page}
   h2,h3{break-after:avoid}
   .lista{grid-template-columns:1fr!important;gap:0}
-  .prod{display:flex!important;flex-direction:column;align-items:center;justify-content:center;height:250mm;padding:6mm;gap:5mm;border:1.5px solid #888;box-shadow:none!important;overflow:hidden}
-  .lista>.prod:first-child{height:234mm}
-  section>.tam:first-of-type .lista>.prod:first-child{height:216mm}
-  section:first-of-type>.tam:first-of-type .lista>.prod:first-child{height:198mm}
+  .prod{display:flex!important;flex-direction:column;align-items:center;justify-content:center;height:266mm;padding:6mm;gap:5mm;border:0;border-top:6mm solid #000;border-bottom:6mm solid #000;background:#fff padding-box;border-radius:0;box-shadow:none!important;overflow:hidden}
+  .lista>.prod:first-child{height:246mm}
+  section>.tam:first-of-type .lista>.prod:first-child{height:228mm}
+  section:first-of-type>.tam:first-of-type .lista>.prod:first-child{height:210mm}
   .foto{flex:1 1 0;min-height:0;width:100%;height:auto;border:0;display:flex;align-items:center;justify-content:center}
   .foto img{width:100%;height:100%;object-fit:contain}
   .datos{flex:0 0 auto;width:100%;gap:3mm;align-items:center!important;text-align:center}
