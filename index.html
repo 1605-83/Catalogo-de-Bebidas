@@ -138,6 +138,10 @@ h2 small,h3 small,.carro h2{text-shadow:none}
 .zoom[hidden]{display:none}
 .zoom img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;background:#fff}
 .zoom button{position:absolute;top:12px;right:12px;font-size:1.4rem;line-height:1;background:#fff;color:#000;border:0;border-radius:999px;width:40px;height:40px;cursor:pointer}
+.sin-stock{align-self:flex-start;white-space:nowrap;margin-bottom:6px;font-size:.9rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:#4B5563;border:2px solid #fff;box-shadow:0 0 0 2px #4B5563;border-radius:999px;padding:3px 12px}
+.prod.agotado .agrs{display:none}
+.prod.agotado .foto img{filter:grayscale(1);opacity:.55}
+.prod.agotado .precio b{color:#9AA3AF!important;text-decoration:line-through}
 .oferta-sello{align-self:flex-start;white-space:nowrap;margin-bottom:6px;font-size:.9rem;font-weight:900;letter-spacing:.06em;color:#fff;background:#E10600;border:2px solid #fff;box-shadow:0 0 0 2px #E10600,0 2px 8px rgba(225,6,0,.45);border-radius:999px;padding:3px 12px;transform-origin:left center;animation:latido 1.1s ease-in-out infinite}
 @keyframes latido{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
 @media (prefers-reduced-motion:reduce){.oferta-sello{animation-duration:2.5s}}
@@ -429,6 +433,8 @@ const BEBIDAS = [
 // productos que tambien se venden sueltos por unidad; el resto solo por bulto (pedido de Bruno, 31/10/2026)
 const SUELTOS = /skyy|hormiga negra|otro loco m.s|olivaria|col.n selecto|m.s loco que una cabra|santa julia|cosecha tard|federico de alvear|new style|fernet (branca|1882 750)|corona botella 710|gin merle|smirnoff botella|gancia americano|licor de mel|whisky|caf. al co/i;
 const FOTOS_V = '5';   // cambiar cuando se reemplazan las fotos
+// productos sin stock (por su foto): se ven con el cartel SIN STOCK y sin botones de compra (pedido de Bruno, 26/11/2026)
+const SIN_STOCK = new Set(['brul-1l']);
 const fmt = new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',minimumFractionDigits:0,maximumFractionDigits:0});
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
@@ -437,6 +443,7 @@ function sinFoto(img, texto){ const s = document.createElement('span'); s.classN
 const esCombo = n => /^Combo /.test(n);
 const tarjeta = (p, cat, tam) => {
   const [nombre, foto, ops, dest, antes] = p;
+  const agot = SIN_STOCK.has(foto);
   const marca = nombre.split(/\s/)[0];
   const fotos = foto && foto !== '-' ? foto.split('|') : [];
   const img = foto === '-' ? '' : fotos.length ? `<img src="img/bebidas/${esc(fotos[0])}.jpg?v=${FOTOS_V}" alt="${esc(nombre)}" loading="lazy"${fotos.length > 1 ? ` data-fotos="${esc(foto)}"` : ''} onerror="sinFoto(this,'${esc(marca)}')">` : `<span class="sin">${esc(marca)}</span>`;
@@ -445,11 +452,12 @@ const tarjeta = (p, cat, tam) => {
     : `<div class="op"><div class="precio bulto"><span>${esCombo(nombre) ? 'Combo' : 'Unidad'}</span><b>${fmt.format(pr)}</b></div></div>`)
     // por bulto siempre; suelto por unidad solo los de SUELTOS (al precio por unidad que se muestra)
     + `<div class="agrs">${u ? `<div class="agr" data-id="${esc(nombre + '|' + u)}" data-n="${esc(nombre)}" data-u="${u}" data-p="${pr}"></div>` : ''}${!u || SUELTOS.test(nombre) ? `<div class="agr" data-id="${esc(nombre + '|0')}" data-n="${esc(nombre)}" data-u="0" data-p="${u ? (pu || Math.round(pr / u)) : pr}"></div>` : ''}</div>`).join('');
-  return `<article class="prod${esCombo(nombre) ? ' dest combo' : antes ? ' oferta' : dest ? ' dest' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
+  return `<article class="prod${esCombo(nombre) ? ' dest combo' : antes ? ' oferta' : dest ? ' dest' : ''}${agot ? ' agotado' : ''}" data-buscar="${esc(norm(nombre + ' ' + cat + ' ' + tam + (dest ? ' ' + dest : '')))}">
     <div class="foto">${img}</div>
     <div class="datos">
       ${antes ? '<div class="oferta-sello">🔥 OFERTA</div>' : esCombo(nombre) || dest ? '<div class="sello">★ Producto destacado</div>' : ''}
       ${antes ? `<div class="antes">Antes ${fmt.format(antes)} el bulto</div>` : ''}
+      ${agot ? '<div class="sin-stock">Sin stock</div>' : ''}
       <div class="desc">${esc(nombre)}</div>
       ${ops.some(o => o[0]) ? '' : `<div class="det">Precio por ${esCombo(nombre) ? 'combo' : 'unidad'}</div>`}
       ${precios}
