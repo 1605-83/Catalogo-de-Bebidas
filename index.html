@@ -108,7 +108,9 @@ header.cab{display:flex;justify-content:space-between;align-items:flex-start;gap
 @keyframes letras{0%{color:#FF4D4D}16%{color:#FFB020}33%{color:#FFE14D}50%{color:#4DDB6B}66%{color:#3BB3FF}83%{color:#B26BFF}100%{color:#FF4D4D}}
 .prod{border-width:2.5px;animation:bordes 6s linear infinite}
 .tam{animation:bordes 6s linear infinite}
-h1,h3{animation:letras 6s linear infinite}
+/* 26/11/2026 (pedido de Bruno): los títulos quedan fijos en blanco con borde negro, sin el cambio de colores */
+h1,h2,h3{animation:none;color:#fff;text-shadow:-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000,0 2px 3px rgba(0,0,0,.6)}
+h2 small,h3 small,.carro h2{text-shadow:none}
 @media (prefers-reduced-motion:reduce){.prod,.tam,h1,h3{animation-duration:30s}}/* WhatsApp al lado del boton del PDF */
 .acciones{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
 .musica{position:fixed;left:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:5;width:46px;height:46px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.75);font-size:1.3rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.5)}
